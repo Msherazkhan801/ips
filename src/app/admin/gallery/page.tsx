@@ -137,7 +137,7 @@ export default function AdminGalleryPage() {
     {
       title: 'Official Campus Gate & Landmark Wall Mural',
       category: 'campus' as const,
-      url: '/images/iqra-school-mural.png',
+      url: '/images/iqra-school-event.jpg',
       desc: 'Main landmark wall art and calligraphy emblem at Iqra Public School Permoli.',
     },
     {

@@ -302,7 +302,7 @@ export const DEFAULT_GALLERY: GalleryItem[] = [
     id: "gal-0",
     title: "Official Campus Wall Mural & Gate",
     category: "campus",
-    imageUrl: "/images/iqra-school-mural.png",
+    imageUrl: "/images/iqra-school-event.jpg",
     description: "The vibrant landmark wall art and emblem at the main gate of Iqra Public School Permoli.",
     uploadDate: "2026-09-21",
     featured: true,

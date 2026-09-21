@@ -110,7 +110,7 @@ export default function AboutPage() {
               <div className="lg:col-span-5">
                 <div className="rounded-3xl overflow-hidden shadow-2xl border-4 border-white/20 bg-school-900 group relative">
                   <img
-                    src="/images/iqra-school-mural.png"
+                    src="/images/iqra-school-event.jpg"
                     alt="Iqra Public School Permoli Wall Mural & Gate"
                     className="w-full h-72 sm:h-80 object-cover group-hover:scale-105 transition-transform duration-700"
                   />
@@ -225,9 +225,9 @@ export default function AboutPage() {
                 <div className="lg:col-span-4 text-center">
                   <div className="w-32 h-32 rounded-3xl bg-school-800 border-4 border-gold-400/40 mx-auto overflow-hidden shadow-xl mb-4">
                     <img
-                      src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80"
-                      alt="Principal of Iqra Public School Permoli"
-                      className="w-full h-full object-cover"
+                      src="/images/principal-akhter-munir.png"
+                      alt="Akhter Munir - Principal of Iqra Public School Permoli"
+                      className="w-full h-full object-cover object-top"
                     />
                   </div>
                   <h4 className="text-lg font-bold text-white">Akhter Munir</h4>
