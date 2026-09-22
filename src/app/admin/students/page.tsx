@@ -31,6 +31,7 @@ import {
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { Student, FeePayment } from '@/types';
+import GoogleDriveImageInput from '@/components/google-drive-image-input';
 
 export default function AdminStudentsPage() {
   const { 
@@ -332,7 +333,10 @@ export default function AdminStudentsPage() {
                             <img
                               src={student.photoUrl}
                               alt={student.name}
-                              className="w-10 h-10 rounded-xl object-cover border border-slate-200"
+                              onError={(e) => {
+                                (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80';
+                              }}
+                              className="w-10 h-10 rounded-xl object-cover border border-slate-200 shadow-2xs"
                             />
                             <div>
                               <p className="font-bold text-slate-900">{student.name}</p>
@@ -609,6 +613,18 @@ export default function AdminStudentsPage() {
                     value={newStudentData.address}
                     onChange={(e) => setNewStudentData({ ...newStudentData, address: e.target.value })}
                     className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none"
+                  />
+                </div>
+
+                {/* Student Photo */}
+                <div className="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200">
+                  <GoogleDriveImageInput
+                    value={newStudentData.photoUrl}
+                    onChange={(url) => setNewStudentData({ ...newStudentData, photoUrl: url })}
+                    label="Student Profile Photograph"
+                    placeholder="Paste Google Drive link for student photo..."
+                    aspectRatio="square"
+                    helperText="Paste Google Drive photo link (0 database storage). Ensure sharing is 'Anyone with the link can view'."
                   />
                 </div>
               </div>
@@ -890,13 +906,15 @@ export default function AdminStudentsPage() {
                   </div>
                 </div>
 
-                <div>
-                  <label className="block text-xs font-bold text-slate-700 uppercase mb-1">Student Photo URL</label>
-                  <input
-                    type="url"
+                {/* Student Photo */}
+                <div className="p-3.5 bg-slate-50/80 rounded-xl border border-slate-200">
+                  <GoogleDriveImageInput
                     value={editFormData.photoUrl || ''}
-                    onChange={(e) => setEditFormData({ ...editFormData, photoUrl: e.target.value })}
-                    className="w-full px-3 py-2 bg-slate-50 border border-slate-200 rounded-xl text-xs font-medium outline-none"
+                    onChange={(url) => setEditFormData({ ...editFormData, photoUrl: url })}
+                    label="Student Profile Photograph"
+                    placeholder="Paste Google Drive link or enter URL..."
+                    aspectRatio="square"
+                    helperText="Google Drive direct link stores 0 KB in the database."
                   />
                 </div>
               </div>
@@ -1167,9 +1185,19 @@ export default function AdminStudentsPage() {
             onClick={(e) => e.stopPropagation()}
           >
             <div className="bg-school-950 text-white p-6 relative flex justify-between items-center">
-              <div>
-                <span className="text-[10px] font-bold uppercase text-gold-400">Student Profile & Academic Record</span>
-                <h3 className="text-xl font-bold text-white">{viewStudent.name} ({viewStudent.rollNo})</h3>
+              <div className="flex items-center gap-3.5">
+                <img
+                  src={viewStudent.photoUrl}
+                  alt={viewStudent.name}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80';
+                  }}
+                  className="w-12 h-12 rounded-xl object-cover border-2 border-gold-400/40 shadow-sm"
+                />
+                <div>
+                  <span className="text-[10px] font-bold uppercase text-gold-400">Student Profile & Academic Record</span>
+                  <h3 className="text-xl font-bold text-white">{viewStudent.name} ({viewStudent.rollNo})</h3>
+                </div>
               </div>
               <button
                 onClick={() => setViewStudent(null)}

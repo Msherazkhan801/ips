@@ -96,6 +96,9 @@ export default function GallerySection() {
                 <img
                   src={item.imageUrl}
                   alt={item.title}
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).src = '/images/iqra-school-event.jpg';
+                  }}
                   className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100"
                 />
                 
@@ -155,6 +158,9 @@ export default function GallerySection() {
               <img
                 src={activePhoto.imageUrl}
                 alt={activePhoto.title}
+                onError={(e) => {
+                  (e.target as HTMLImageElement).src = '/images/iqra-school-event.jpg';
+                }}
                 className="max-h-[70vh] w-auto object-contain"
               />
             </div>

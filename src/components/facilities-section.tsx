@@ -14,17 +14,10 @@ import {
 const FACILITIES = [
   {
     icon: Cpu,
-    title: 'AI & Robotics Innovation Hub',
+    title: 'AI & CS Hub',
     desc: 'Equipped with 3D printers, IoT micro-controllers, drone kits, and high-speed simulation GPUs for student tech ventures.',
     image: 'https://images.unsplash.com/photo-1581092160607-ee22621dd758?w=600&auto=format&fit=crop&q=80',
     tag: 'Future Tech',
-  },
-  {
-    icon: Trophy,
-    title: 'Olympic-Standard Sports Arena',
-    desc: 'Includes an Olympic-size heated pool, indoor basketball courts, FIFA-certified turf, and professional coaching staff.',
-    image: 'https://images.unsplash.com/photo-1534438327276-14e5300c3a48?w=600&auto=format&fit=crop&q=80',
-    tag: 'Athletics',
   },
   {
     icon: BookOpen,
@@ -40,20 +33,7 @@ const FACILITIES = [
     image: 'https://images.unsplash.com/photo-1514306191717-452ec28c7814?w=600&auto=format&fit=crop&q=80',
     tag: 'Creativity',
   },
-  {
-    icon: Leaf,
-    title: 'Eco-Living & Botanical Greenhouse',
-    desc: 'Hands-on agricultural science, clean energy solar systems, and environmental biology experiments.',
-    image: 'https://images.unsplash.com/photo-1585320806297-9794b3e4eeae?w=600&auto=format&fit=crop&q=80',
-    tag: 'Sustainability',
-  },
-  {
-    icon: Building2,
-    title: 'Smart Health & Wellness Suites',
-    desc: 'On-campus certified pediatric medical staff, nutritional cafeterias, and mental well-being counselling rooms.',
-    image: 'https://images.unsplash.com/photo-1519494026892-80bbd2d6fd0d?w=600&auto=format&fit=crop&q=80',
-    tag: 'Well-being',
-  },
+
 ];
 
 export default function FacilitiesSection() {

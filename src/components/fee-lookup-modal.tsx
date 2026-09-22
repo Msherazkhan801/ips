@@ -1,6 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
+import Link from 'next/link';
 import { useSchoolData } from '@/context/school-data-context';
 import { 
   Search, 
@@ -13,10 +14,16 @@ import {
   Printer, 
   ArrowRight,
   UserCheck,
-  DollarSign
+  DollarSign,
+  GraduationCap,
+  Award,
+  BookOpen,
+  ExternalLink,
+  Check
 } from 'lucide-react';
 import { formatCurrency, formatDate } from '@/lib/utils';
 import { Student, FeePayment } from '@/types';
+import { getStudentSubjectMarks, getGradeRemarks } from '@/lib/academic-utils';
 
 interface FeeLookupModalProps {
   isOpen: boolean;
@@ -28,6 +35,7 @@ export default function FeeLookupModal({ isOpen, onClose }: FeeLookupModalProps)
   const [searchRoll, setSearchRoll] = useState('');
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [searched, setSearched] = useState(false);
+  const [modalTab, setModalTab] = useState<'marks' | 'fee'>('marks');
   const [activeReceipt, setActiveReceipt] = useState<FeePayment | null>(null);
 
   if (!isOpen) return null;
@@ -47,12 +55,20 @@ export default function FeeLookupModal({ isOpen, onClose }: FeeLookupModalProps)
     ? payments.filter(p => p.studentId === selectedStudent.id)
     : [];
 
-  const sampleRolls = ['IPS-2026-001', 'IPS-2026-002', 'IPS-2026-003'];
+  const subjectMarks = selectedStudent 
+    ? getStudentSubjectMarks(selectedStudent)
+    : [];
+
+  const gradeRemarks = selectedStudent?.percentage !== undefined 
+    ? getGradeRemarks(selectedStudent.percentage)
+    : { text: 'Academic Record Verified', color: 'text-blue-700', badge: 'bg-blue-600' };
+
+  const sampleRolls = ['IPS-2026-001', 'IPS-2026-002', 'IPS-2026-003', 'IPS-2026-004'];
 
   return (
-    <div className="fixed inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
+    <div className="fixed inset-0 z-50 bg-black/75 backdrop-blur-sm flex items-center justify-center p-4 overflow-y-auto animate-fade-in">
       <div 
-        className="bg-white rounded-2xl w-full max-w-2xl shadow-2xl border border-slate-100 overflow-hidden my-8"
+        className="bg-white rounded-3xl w-full max-w-2xl shadow-2xl border border-slate-100 overflow-hidden my-8"
         onClick={(e) => e.stopPropagation()}
       >
         
@@ -66,13 +82,13 @@ export default function FeeLookupModal({ isOpen, onClose }: FeeLookupModalProps)
           </button>
           
           <div className="flex items-center gap-2 mb-1 text-gold-400 text-xs font-bold uppercase tracking-wider">
-            <CreditCard className="w-4 h-4" /> Student Portal
+            <GraduationCap className="w-4 h-4" /> Student Portal
           </div>
           <h3 className="text-2xl font-black text-white">
-            Student Fee & Dues Lookup
+            Student Marks & Fee Lookup
           </h3>
           <p className="text-xs text-school-200 mt-1">
-            Enter your official Student ID or Roll Number to check your current fee clearance and download payment receipts.
+            Enter Student Roll Number to check academic exam marks, Detailed Marks Certificate (DMC), and fee clearance status.
           </p>
         </div>
 
@@ -91,7 +107,7 @@ export default function FeeLookupModal({ isOpen, onClose }: FeeLookupModalProps)
                 type="text"
                 value={searchRoll}
                 onChange={(e) => setSearchRoll(e.target.value)}
-                placeholder="Enter Roll No (e.g. IPS-2026-001 or Name)..."
+                placeholder="Enter Roll No (e.g. IPS-2026-001) or Student Name..."
                 className="w-full pl-10 pr-4 py-2.5 bg-white border border-slate-200 rounded-xl text-sm font-medium text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-school-600 focus:border-transparent"
               />
             </div>
@@ -115,7 +131,11 @@ export default function FeeLookupModal({ isOpen, onClose }: FeeLookupModalProps)
                   setSearchRoll(roll);
                   handleSearch(roll);
                 }}
-                className="px-2.5 py-1 rounded-md text-[11px] font-bold bg-white text-school-700 border border-slate-200 hover:border-school-500 hover:bg-school-50 transition-all"
+                className={`px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all ${
+                  searchRoll.toUpperCase() === roll 
+                    ? 'bg-school-900 text-white border-school-900' 
+                    : 'bg-white text-school-700 border-slate-200 hover:border-school-500 hover:bg-school-50'
+                }`}
               >
                 {roll}
               </button>
@@ -128,28 +148,31 @@ export default function FeeLookupModal({ isOpen, onClose }: FeeLookupModalProps)
           {searched && !selectedStudent ? (
             <div className="text-center py-10">
               <AlertTriangle className="w-12 h-12 text-amber-500 mx-auto mb-3" />
-              <h4 className="text-base font-bold text-slate-800">No Student Found</h4>
+              <h4 className="text-base font-bold text-slate-800">No Student Record Located</h4>
               <p className="text-xs text-slate-500 mt-1 max-w-sm mx-auto">
-                No matching record found for "{searchRoll}". Please check the Roll Number or contact the administration office.
+                No matching record found for "{searchRoll}". Please check the Roll Number or contact the IPS administration office.
               </p>
             </div>
           ) : selectedStudent ? (
-            <div className="space-y-6">
+            <div className="space-y-5">
               
               {/* Student Overview Card */}
-              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-200 gap-4">
+              <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between p-4 bg-slate-50 rounded-2xl border border-slate-200 gap-4">
                 <div className="flex items-center gap-3.5">
                   <img
                     src={selectedStudent.photoUrl}
                     alt={selectedStudent.name}
-                    className="w-14 h-14 rounded-xl object-cover border-2 border-white shadow-md"
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80';
+                    }}
+                    className="w-14 h-14 rounded-xl object-cover border-2 border-white shadow-md flex-shrink-0"
                   />
                   <div>
                     <div className="flex items-center gap-2">
                       <h4 className="text-base font-bold text-slate-900">
                         {selectedStudent.name}
                       </h4>
-                      <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-school-100 text-school-800 border border-school-200">
+                      <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-school-900 text-gold-300">
                         {selectedStudent.rollNo}
                       </span>
                     </div>
@@ -159,125 +182,227 @@ export default function FeeLookupModal({ isOpen, onClose }: FeeLookupModalProps)
                   </div>
                 </div>
 
-                {/* Status Badge */}
-                <div>
+                {/* Status Badges */}
+                <div className="flex items-center gap-1.5 flex-wrap">
+                  <span className="px-2.5 py-1 rounded-lg text-xs font-bold bg-blue-100 text-blue-900 border border-blue-200">
+                    {selectedStudent.gradePerformance || 'A (Excellent)'}
+                  </span>
+
                   {selectedStudent.feeStatus === 'paid' && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
-                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Dues Cleared (Paid)
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-emerald-100 text-emerald-800 border border-emerald-300">
+                      <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" /> Fee Paid
                     </span>
                   )}
                   {selectedStudent.feeStatus === 'partial' && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">
-                      <Clock className="w-3.5 h-3.5 text-amber-600" /> Partial Remaining
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-amber-100 text-amber-800 border border-amber-300">
+                      <Clock className="w-3.5 h-3.5 text-amber-600" /> Fee Dues
                     </span>
                   )}
                   {selectedStudent.feeStatus === 'overdue' && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-bold bg-red-100 text-red-800 border border-red-300 animate-pulse">
-                      <AlertTriangle className="w-3.5 h-3.5 text-red-600" /> Overdue Dues
+                    <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-lg text-xs font-bold bg-red-100 text-red-800 border border-red-300">
+                      <AlertTriangle className="w-3.5 h-3.5 text-red-600" /> Overdue
                     </span>
                   )}
                 </div>
               </div>
 
-              {/* Fee Financial Metrics Summary */}
-              <div className="grid grid-cols-3 gap-3">
-                <div className="p-4 rounded-xl bg-slate-50 border border-slate-200 text-center">
-                  <p className="text-[10px] uppercase font-bold text-slate-400">Total Fee</p>
-                  <p className="text-lg font-black text-slate-800 mt-1">
-                    {formatCurrency(selectedStudent.totalFee)}
-                  </p>
-                </div>
-                <div className="p-4 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
-                  <p className="text-[10px] uppercase font-bold text-emerald-600">Amount Paid</p>
-                  <p className="text-lg font-black text-emerald-700 mt-1">
-                    {formatCurrency(selectedStudent.paidFee)}
-                  </p>
-                </div>
-                <div className={`p-4 rounded-xl border text-center ${
-                  selectedStudent.remainingFee > 0 ? 'bg-red-50 border-red-200' : 'bg-slate-50 border-slate-200'
-                }`}>
-                  <p className={`text-[10px] uppercase font-bold ${
-                    selectedStudent.remainingFee > 0 ? 'text-red-600' : 'text-slate-400'
-                  }`}>Remaining Fee</p>
-                  <p className={`text-lg font-black mt-1 ${
-                    selectedStudent.remainingFee > 0 ? 'text-red-700' : 'text-slate-700'
-                  }`}>
-                    {formatCurrency(selectedStudent.remainingFee)}
-                  </p>
-                </div>
+              {/* Tabs Inside Modal */}
+              <div className="flex bg-slate-100 p-1 rounded-xl gap-1">
+                <button
+                  type="button"
+                  onClick={() => setModalTab('marks')}
+                  className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                    modalTab === 'marks'
+                      ? 'bg-white text-blue-900 shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  <Award className="w-3.5 h-3.5 text-blue-600" />
+                  <span>Academic Marks & DMC</span>
+                </button>
+
+                <button
+                  type="button"
+                  onClick={() => setModalTab('fee')}
+                  className={`flex-1 py-1.5 rounded-lg text-xs font-bold transition-all flex items-center justify-center gap-1.5 ${
+                    modalTab === 'fee'
+                      ? 'bg-white text-emerald-900 shadow-sm'
+                      : 'text-slate-600 hover:text-slate-900'
+                  }`}
+                >
+                  <CreditCard className="w-3.5 h-3.5 text-emerald-600" />
+                  <span>Fee Clearance & Dues</span>
+                </button>
               </div>
 
-              {/* Academic Performance Summary */}
-              {selectedStudent.obtainedMarks !== undefined && (
-                <div className="p-3.5 rounded-xl bg-blue-50/70 border border-blue-200 flex items-center justify-between text-xs">
-                  <div>
-                    <span className="text-[10px] uppercase font-bold text-blue-600 block">Academic Standing</span>
-                    <span className="font-black text-blue-900 text-sm">{selectedStudent.gradePerformance || 'A (Excellent)'}</span>
-                    <span className="text-slate-500 text-[11px] block">{selectedStudent.examTerm || 'BISE Mardan Board Assessment'}</span>
+              {/* TAB 1: ACADEMIC MARKS & DMC */}
+              {modalTab === 'marks' && (
+                <div className="space-y-4">
+                  {/* Score Highlights */}
+                  <div className="grid grid-cols-3 gap-2.5">
+                    <div className="p-3 bg-blue-50/80 border border-blue-200 rounded-xl text-center">
+                      <span className="text-[10px] uppercase font-bold text-blue-800 block">Total Exam Marks</span>
+                      <span className="text-lg font-black text-blue-950 mt-0.5 block">{selectedStudent.totalMarks || 1100}</span>
+                    </div>
+
+                    <div className="p-3 bg-emerald-50/80 border border-emerald-200 rounded-xl text-center">
+                      <span className="text-[10px] uppercase font-bold text-emerald-800 block">Obtained Marks</span>
+                      <span className="text-lg font-black text-emerald-700 mt-0.5 block">{selectedStudent.obtainedMarks || 950}</span>
+                    </div>
+
+                    <div className="p-3 bg-amber-50/80 border border-amber-200 rounded-xl text-center">
+                      <span className="text-[10px] uppercase font-bold text-amber-900 block">Percentage</span>
+                      <span className="text-lg font-black text-amber-700 mt-0.5 block">{selectedStudent.percentage || 86.4}%</span>
+                    </div>
                   </div>
-                  <div className="text-right">
-                    <span className="font-bold text-slate-800 text-sm block">{selectedStudent.obtainedMarks} / {selectedStudent.totalMarks || 1100}</span>
-                    <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-600 text-white inline-block mt-0.5">{selectedStudent.percentage || 85}% Marks</span>
+
+                  {/* Subject Wise DMC Table */}
+                  <div>
+                    <span className="text-[10px] uppercase font-bold text-slate-400 block mb-2">Subject-Wise Marks Breakdown</span>
+                    <div className="overflow-x-auto border border-slate-200 rounded-xl">
+                      <table className="w-full text-left text-xs">
+                        <thead>
+                          <tr className="bg-slate-50 text-slate-500 font-bold uppercase text-[10px] border-b border-slate-200">
+                            <th className="py-2 px-3">Subject</th>
+                            <th className="py-2 px-3 text-center">Max</th>
+                            <th className="py-2 px-3 text-center">Obt</th>
+                            <th className="py-2 px-3 text-center">%</th>
+                            <th className="py-2 px-3 text-right">Grade</th>
+                          </tr>
+                        </thead>
+                        <tbody className="divide-y divide-slate-100 font-medium">
+                          {subjectMarks.map((s, idx) => (
+                            <tr key={idx} className="hover:bg-slate-50">
+                              <td className="py-2 px-3 font-semibold text-slate-800">{s.name}</td>
+                              <td className="py-2 px-3 text-center text-slate-500">{s.totalMarks}</td>
+                              <td className="py-2 px-3 text-center font-bold text-slate-900">{s.obtainedMarks}</td>
+                              <td className="py-2 px-3 text-center text-slate-600">{s.percentage}%</td>
+                              <td className="py-2 px-3 text-right font-black text-emerald-700">{s.grade}</td>
+                            </tr>
+                          ))}
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+
+                  <div className="p-3 bg-slate-50 rounded-xl text-xs flex justify-between items-center">
+                    <span className="text-slate-600 font-medium">Exam Session: <strong>{selectedStudent.examTerm || 'Annual Examination'}</strong></span>
+                    <span className="font-bold text-emerald-700 flex items-center gap-1">
+                      <Check className="w-3.5 h-3.5" /> Result: PASSED
+                    </span>
                   </div>
                 </div>
               )}
 
-              {/* Due Date Notice */}
-              <div className="flex items-center justify-between text-xs px-4 py-3 rounded-lg bg-slate-50 border border-slate-200 text-slate-700">
-                <span className="font-semibold">Next Fee Due Date:</span>
-                <span className="font-bold">{formatDate(selectedStudent.dueDate)}</span>
-              </div>
-
-              {/* Payment History & Receipts */}
-              <div>
-                <h5 className="text-xs font-bold uppercase tracking-wider text-slate-400 mb-3 flex items-center gap-1.5">
-                  <Receipt className="w-3.5 h-3.5" /> Verified Payment Receipts
-                </h5>
-
-                {studentPayments.length === 0 ? (
-                  <p className="text-xs text-slate-400 italic">No payments logged yet.</p>
-                ) : (
-                  <div className="space-y-2">
-                    {studentPayments.map((p) => (
-                      <div
-                        key={p.id}
-                        className="flex items-center justify-between p-3 rounded-xl bg-white border border-slate-200 hover:border-slate-300 transition-all text-xs"
-                      >
-                        <div>
-                          <div className="flex items-center gap-2">
-                            <span className="font-bold text-slate-800">{p.receiptNo}</span>
-                            <span className="px-1.5 py-0.5 rounded text-[10px] font-semibold bg-slate-100 text-slate-600 uppercase">
-                              {p.paymentMethod.replace('_', ' ')}
-                            </span>
-                          </div>
-                          <p className="text-[11px] text-slate-500 mt-0.5">
-                            {formatDate(p.date)} • {p.notes}
-                          </p>
-                        </div>
-                        <div className="flex items-center gap-3">
-                          <span className="font-black text-slate-900 text-sm">
-                            {formatCurrency(p.amount)}
-                          </span>
-                          <button
-                            type="button"
-                            onClick={() => setActiveReceipt(p)}
-                            className="p-1.5 text-school-600 hover:bg-school-50 rounded-lg transition-colors"
-                            title="View / Print Receipt"
-                          >
-                            <Printer className="w-4 h-4" />
-                          </button>
-                        </div>
-                      </div>
-                    ))}
+              {/* TAB 2: FEE CLEARANCE */}
+              {modalTab === 'fee' && (
+                <div className="space-y-4">
+                  {/* Fee Financial Metrics Summary */}
+                  <div className="grid grid-cols-3 gap-2.5">
+                    <div className="p-3 rounded-xl bg-slate-50 border border-slate-200 text-center">
+                      <p className="text-[10px] uppercase font-bold text-slate-400">Total Fee</p>
+                      <p className="text-base font-black text-slate-800 mt-0.5">
+                        {formatCurrency(selectedStudent.totalFee)}
+                      </p>
+                    </div>
+                    <div className="p-3 rounded-xl bg-emerald-50 border border-emerald-200 text-center">
+                      <p className="text-[10px] uppercase font-bold text-emerald-600">Amount Paid</p>
+                      <p className="text-base font-black text-emerald-700 mt-0.5">
+                        {formatCurrency(selectedStudent.paidFee)}
+                      </p>
+                    </div>
+                    <div className={`p-3 rounded-xl border text-center ${
+                      selectedStudent.remainingFee > 0 ? 'bg-red-50 border-red-200' : 'bg-slate-50 border-slate-200'
+                    }`}>
+                      <p className={`text-[10px] uppercase font-bold ${
+                        selectedStudent.remainingFee > 0 ? 'text-red-600' : 'text-slate-400'
+                      }`}>Remaining</p>
+                      <p className={`text-base font-black mt-0.5 ${
+                        selectedStudent.remainingFee > 0 ? 'text-red-700' : 'text-slate-700'
+                      }`}>
+                        {formatCurrency(selectedStudent.remainingFee)}
+                      </p>
+                    </div>
                   </div>
-                )}
+
+                  {/* Due Date Notice */}
+                  <div className="flex items-center justify-between text-xs px-3.5 py-2.5 rounded-xl bg-slate-50 border border-slate-200 text-slate-700">
+                    <span className="font-semibold">Fee Due Date:</span>
+                    <span className="font-bold">{formatDate(selectedStudent.dueDate)}</span>
+                  </div>
+
+                  {/* Payment Receipts List */}
+                  <div>
+                    <h5 className="text-[10px] font-bold uppercase tracking-wider text-slate-400 mb-2 flex items-center gap-1.5">
+                      <Receipt className="w-3.5 h-3.5" /> Verified Payment Receipts
+                    </h5>
+
+                    {studentPayments.length === 0 ? (
+                      <p className="text-xs text-slate-400 italic">No payments logged yet.</p>
+                    ) : (
+                      <div className="space-y-1.5">
+                        {studentPayments.map((p) => (
+                          <div
+                            key={p.id}
+                            className="flex items-center justify-between p-2.5 rounded-xl bg-white border border-slate-200 text-xs"
+                          >
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="font-bold text-slate-800">{p.receiptNo}</span>
+                                <span className="px-1.5 py-0.2 rounded text-[9px] font-semibold bg-slate-100 text-slate-600 uppercase">
+                                  {p.paymentMethod.replace('_', ' ')}
+                                </span>
+                              </div>
+                              <p className="text-[10px] text-slate-500 mt-0.5">
+                                {formatDate(p.date)}
+                              </p>
+                            </div>
+                            <div className="flex items-center gap-2">
+                              <span className="font-black text-slate-900 text-xs">
+                                {formatCurrency(p.amount)}
+                              </span>
+                              <button
+                                type="button"
+                                onClick={() => setActiveReceipt(p)}
+                                className="p-1 text-school-600 hover:bg-school-50 rounded transition-colors"
+                                title="Print Receipt"
+                              >
+                                <Printer className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              )}
+
+              {/* Link to Full Page Portal */}
+              <div className="pt-2 border-t border-slate-100 flex items-center justify-between">
+                <Link
+                  href="/fee-check"
+                  onClick={onClose}
+                  className="text-xs font-bold text-school-700 hover:text-school-900 flex items-center gap-1"
+                >
+                  <span>Open Full Verification Portal & Print DMC</span>
+                  <ExternalLink className="w-3 h-3" />
+                </Link>
+
+                <button
+                  type="button"
+                  onClick={onClose}
+                  className="px-4 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg text-xs font-bold"
+                >
+                  Close
+                </button>
               </div>
 
             </div>
           ) : (
             <div className="text-center py-12">
               <Search className="w-12 h-12 text-slate-300 mx-auto mb-3" />
-              <p className="text-sm font-semibold text-slate-600">Search by Roll Number to view dues</p>
+              <p className="text-sm font-semibold text-slate-600">Search by Roll Number to view marks & fees</p>
               <p className="text-xs text-slate-400 mt-1">Try one of the quick test roll numbers above!</p>
             </div>
           )}

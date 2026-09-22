@@ -181,6 +181,9 @@ export default function AdminIdCardsPage() {
                     <img
                       src={selectedStudent.photoUrl}
                       alt={selectedStudent.name}
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).src = 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=400&auto=format&fit=crop&q=80';
+                      }}
                       className="w-24 h-24 rounded-2xl object-cover border-4 border-white shadow-lg mx-auto"
                     />
                     <span className="absolute -bottom-2 left-1/2 -translate-x-1/2 px-2 py-0.5 rounded-full text-[9px] font-black uppercase tracking-wider bg-gold-400 text-school-950 shadow-sm whitespace-nowrap">
