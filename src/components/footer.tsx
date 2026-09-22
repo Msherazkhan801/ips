@@ -67,7 +67,7 @@ export default function Footer() {
                   rel="noopener noreferrer"
                   className="text-emerald-300 hover:text-emerald-200 font-semibold transition-colors"
                 >
-                  WhatsApp: 0347-2943510 (+92 347 2943510)
+                  WhatsApp: 0347-2943510 (+92 301 8347029)
                 </a>
               </div>
             </div>

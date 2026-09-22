@@ -42,4 +42,4 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ## 👨‍🏫 Leadership & Location
 - **Principal**: Akhter Munir
 - **Location**: Permoli, District Swabi, Khyber Pakhtunkhwa, Pakistan
-- **Hotline / WhatsApp**: +92 347 2943510
+- **Hotline / WhatsApp**: +92 301 8347029

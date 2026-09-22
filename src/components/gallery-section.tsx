@@ -78,7 +78,7 @@ export default function GallerySection() {
           </div>
         </div>
 
-        {/* Gallery Grid */}
+        {/* Gallery Grid (Max 6 Photos on Home Page) */}
         {filteredGallery.length === 0 ? (
           <div className="py-16 text-center border-2 border-dashed border-slate-200 rounded-2xl bg-slate-50">
             <Camera className="w-12 h-12 text-slate-300 mx-auto mb-3" />
@@ -86,53 +86,66 @@ export default function GallerySection() {
             <p className="text-xs text-slate-400 mt-1">Admin can upload new high-resolution photos anytime!</p>
           </div>
         ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-            {filteredGallery.map((item) => (
-              <div
-                key={item.id}
-                onClick={() => setActivePhoto(item)}
-                className="group relative rounded-2xl overflow-hidden bg-slate-900 shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer h-72 border border-slate-100"
-              >
-                <img
-                  src={item.imageUrl}
-                  alt={item.title}
-                  onError={(e) => {
-                    (e.target as HTMLImageElement).src = '/images/iqra-school-event.jpg';
-                  }}
-                  className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100"
-                />
-                
-                {/* Gradient overlay */}
-                <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
+          <>
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+              {filteredGallery.slice(0, 6).map((item) => (
+                <div
+                  key={item.id}
+                  onClick={() => setActivePhoto(item)}
+                  className="group relative rounded-2xl overflow-hidden bg-slate-900 shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer h-72 border border-slate-100"
+                >
+                  <img
+                    src={item.imageUrl}
+                    alt={item.title}
+                    onError={(e) => {
+                      (e.target as HTMLImageElement).src = '/images/iqra-school-event.jpg';
+                    }}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100"
+                  />
+                  
+                  {/* Gradient overlay */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
 
-                {/* Top Badge */}
-                <div className="absolute top-4 left-4">
-                  <span className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-white/90 text-slate-900 backdrop-blur-md shadow-sm">
-                    {item.category}
-                  </span>
-                </div>
+                  {/* Top Badge */}
+                  <div className="absolute top-4 left-4">
+                    <span className="px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-wider bg-white/90 text-slate-900 backdrop-blur-md shadow-sm">
+                      {item.category}
+                    </span>
+                  </div>
 
-                {/* Fullscreen icon button */}
-                <div className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                  <Maximize2 className="w-4 h-4" />
-                </div>
+                  {/* Fullscreen icon button */}
+                  <div className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                    <Maximize2 className="w-4 h-4" />
+                  </div>
 
-                {/* Content at Bottom */}
-                <div className="absolute bottom-4 left-4 right-4 text-white">
-                  <h4 className="text-base font-bold leading-snug line-clamp-1 group-hover:text-gold-300 transition-colors">
-                    {item.title}
-                  </h4>
-                  <p className="text-xs text-slate-300 line-clamp-2 mt-1 leading-relaxed">
-                    {item.description}
-                  </p>
-                  <div className="flex items-center gap-1.5 text-[10px] text-slate-400 mt-2 font-medium">
-                    <Calendar className="w-3 h-3 text-gold-400" />
-                    <span>Uploaded: {item.uploadDate}</span>
+                  {/* Content at Bottom */}
+                  <div className="absolute bottom-4 left-4 right-4 text-white">
+                    <h4 className="text-base font-bold leading-snug line-clamp-1 group-hover:text-gold-300 transition-colors">
+                      {item.title}
+                    </h4>
+                    <p className="text-xs text-slate-300 line-clamp-2 mt-1 leading-relaxed">
+                      {item.description}
+                    </p>
+                    <div className="flex items-center gap-1.5 text-[10px] text-slate-400 mt-2 font-medium">
+                      <Calendar className="w-3 h-3 text-gold-400" />
+                      <span>Uploaded: {item.uploadDate}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
-            ))}
-          </div>
+              ))}
+            </div>
+
+            {/* View Full Gallery Link Button */}
+            <div className="mt-12 text-center">
+              <Link
+                href="/gallery"
+                className="inline-flex items-center gap-2 px-8 py-4 bg-school-900 hover:bg-school-950 text-white rounded-2xl text-xs font-bold uppercase tracking-wider shadow-lg shadow-school-900/15 hover:shadow-xl transition-all group"
+              >
+                <span>View Complete School Gallery ({gallery.length} Photographs)</span>
+                <ChevronRight className="w-4 h-4 text-gold-400 group-hover:translate-x-1 transition-transform" />
+              </Link>
+            </div>
+          </>
         )}
 
       </div>

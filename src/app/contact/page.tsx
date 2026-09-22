@@ -135,7 +135,7 @@ export default function ContactPage() {
                         className="inline-flex items-center gap-1.5 text-xs font-bold text-emerald-700 hover:text-emerald-800 mt-2 bg-emerald-50 px-2.5 py-1 rounded-lg border border-emerald-200"
                       >
                         <MessageCircle className="w-3.5 h-3.5" />
-                        <span>Chat Directly on WhatsApp (+92 347 2943510)</span>
+                        <span>Chat Directly on WhatsApp (+92 301 8347029)</span>
                         <ExternalLink className="w-3 h-3" />
                       </a>
                     </div>

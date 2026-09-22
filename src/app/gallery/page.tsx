@@ -13,7 +13,9 @@ import {
   X, 
   Sparkles, 
   Tag, 
-  Globe 
+  Globe,
+  ChevronLeft,
+  ChevronRight
 } from 'lucide-react';
 import { GalleryItem } from '@/types';
 
@@ -23,6 +25,9 @@ export default function GalleryPage() {
   const [activePhoto, setActivePhoto] = useState<GalleryItem | null>(null);
   const [admissionModalOpen, setAdmissionModalOpen] = useState(false);
   const [feeModalOpen, setFeeModalOpen] = useState(false);
+  const [currentPage, setCurrentPage] = useState(1);
+
+  const ITEMS_PER_PAGE = 6;
 
   const categories = [
     { id: 'all', label: 'All Photos' },
@@ -33,9 +38,26 @@ export default function GalleryPage() {
     { id: 'events', label: 'Annual Functions & Prizes' },
   ];
 
+  const handleCategorySelect = (catId: string) => {
+    setSelectedCategory(catId);
+    setCurrentPage(1);
+  };
+
   const filteredGallery = selectedCategory === 'all'
     ? gallery
     : gallery.filter(item => item.category === selectedCategory);
+
+  const totalPages = Math.ceil(filteredGallery.length / ITEMS_PER_PAGE) || 1;
+  const validCurrentPage = Math.min(currentPage, totalPages);
+  const startIndex = (validCurrentPage - 1) * ITEMS_PER_PAGE;
+  const paginatedGallery = filteredGallery.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= totalPages) {
+      setCurrentPage(newPage);
+      window.scrollTo({ top: 350, behavior: 'smooth' });
+    }
+  };
 
   return (
     <div className="min-h-screen flex flex-col bg-slate-50">
@@ -71,7 +93,7 @@ export default function GalleryPage() {
               {categories.map((cat) => (
                 <button
                   key={cat.id}
-                  onClick={() => setSelectedCategory(cat.id)}
+                  onClick={() => handleCategorySelect(cat.id)}
                   className={`px-4 py-2 rounded-full text-xs font-bold transition-all ${
                     selectedCategory === cat.id
                       ? 'bg-school-900 text-white shadow-md'
@@ -91,49 +113,100 @@ export default function GalleryPage() {
                 <p className="text-xs text-slate-400 mt-1">Admin can upload new photos anytime from the Admin Portal.</p>
               </div>
             ) : (
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {filteredGallery.map((item) => (
-                  <div
-                    key={item.id}
-                    onClick={() => setActivePhoto(item)}
-                    className="group relative rounded-3xl overflow-hidden bg-slate-900 shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer h-72 border border-slate-100"
-                  >
-                    <img
-                      src={item.imageUrl}
-                      alt={item.title}
-                      onError={(e) => {
-                        (e.target as HTMLImageElement).src = '/images/iqra-school-event.jpg';
-                      }}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100"
-                    />
-                    
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
+              <>
+                <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                  {paginatedGallery.map((item) => (
+                    <div
+                      key={item.id}
+                      onClick={() => setActivePhoto(item)}
+                      className="group relative rounded-3xl overflow-hidden bg-slate-900 shadow-md hover:shadow-2xl transition-all duration-300 cursor-pointer h-72 border border-slate-100"
+                    >
+                      <img
+                        src={item.imageUrl}
+                        alt={item.title}
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).src = '/images/iqra-school-event.jpg';
+                        }}
+                        className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out opacity-90 group-hover:opacity-100"
+                      />
+                      
+                      <div className="absolute inset-0 bg-gradient-to-t from-slate-950/90 via-slate-950/30 to-transparent opacity-80 group-hover:opacity-90 transition-opacity" />
 
-                    <div className="absolute top-4 left-4">
-                      <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-white/95 text-slate-900 backdrop-blur-md shadow-sm">
-                        {item.category}
-                      </span>
-                    </div>
+                      <div className="absolute top-4 left-4">
+                        <span className="px-2.5 py-1 rounded-lg text-[10px] font-bold uppercase tracking-wider bg-white/95 text-slate-900 backdrop-blur-md shadow-sm">
+                          {item.category}
+                        </span>
+                      </div>
 
-                    <div className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
-                      <Maximize2 className="w-4 h-4" />
-                    </div>
+                      <div className="absolute top-4 right-4 w-9 h-9 rounded-full bg-black/40 backdrop-blur-md text-white flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity">
+                        <Maximize2 className="w-4 h-4" />
+                      </div>
 
-                    <div className="absolute bottom-4 left-4 right-4 text-white">
-                      <h4 className="text-base font-bold leading-snug line-clamp-1 group-hover:text-gold-300 transition-colors">
-                        {item.title}
-                      </h4>
-                      <p className="text-xs text-slate-300 line-clamp-2 mt-1 leading-relaxed">
-                        {item.description}
-                      </p>
-                      <div className="flex items-center gap-1.5 text-[10px] text-slate-400 mt-2 font-medium">
-                        <Calendar className="w-3 h-3 text-gold-400" />
-                        <span>Uploaded: {item.uploadDate}</span>
+                      <div className="absolute bottom-4 left-4 right-4 text-white">
+                        <h4 className="text-base font-bold leading-snug line-clamp-1 group-hover:text-gold-300 transition-colors">
+                          {item.title}
+                        </h4>
+                        <p className="text-xs text-slate-300 line-clamp-2 mt-1 leading-relaxed">
+                          {item.description}
+                        </p>
+                        <div className="flex items-center gap-1.5 text-[10px] text-slate-400 mt-2 font-medium">
+                          <Calendar className="w-3 h-3 text-gold-400" />
+                          <span>Uploaded: {item.uploadDate}</span>
+                        </div>
                       </div>
                     </div>
+                  ))}
+                </div>
+
+                {/* Pagination Controls */}
+                {totalPages > 1 && (
+                  <div className="mt-14 pt-8 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-4">
+                    <p className="text-xs font-semibold text-slate-500">
+                      Showing <strong className="text-slate-900">{startIndex + 1}</strong> to <strong className="text-slate-900">{Math.min(startIndex + ITEMS_PER_PAGE, filteredGallery.length)}</strong> of <strong className="text-slate-900">{filteredGallery.length}</strong> Photographs
+                    </p>
+
+                    <div className="flex items-center gap-1.5">
+                      {/* Previous Page */}
+                      <button
+                        type="button"
+                        onClick={() => handlePageChange(validCurrentPage - 1)}
+                        disabled={validCurrentPage === 1}
+                        className="px-3 py-2 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 transition-all"
+                      >
+                        <ChevronLeft className="w-4 h-4" />
+                        <span className="hidden sm:inline">Prev</span>
+                      </button>
+
+                      {/* Page Numbers */}
+                      {Array.from({ length: totalPages }, (_, i) => i + 1).map((pageNum) => (
+                        <button
+                          key={pageNum}
+                          type="button"
+                          onClick={() => handlePageChange(pageNum)}
+                          className={`w-9 h-9 rounded-xl text-xs font-bold transition-all ${
+                            validCurrentPage === pageNum
+                              ? 'bg-school-900 text-white shadow-md shadow-school-900/10'
+                              : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      ))}
+
+                      {/* Next Page */}
+                      <button
+                        type="button"
+                        onClick={() => handlePageChange(validCurrentPage + 1)}
+                        disabled={validCurrentPage === totalPages}
+                        className="px-3 py-2 rounded-xl text-xs font-bold border border-slate-200 bg-white text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed flex items-center gap-1 transition-all"
+                      >
+                        <span className="hidden sm:inline">Next</span>
+                        <ChevronRight className="w-4 h-4" />
+                      </button>
+                    </div>
                   </div>
-                ))}
-              </div>
+                )}
+              </>
             )}
 
           </div>
