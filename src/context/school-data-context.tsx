@@ -84,7 +84,7 @@ const SchoolDataContext = createContext<SchoolDataContextType | undefined>(undef
 const STORAGE_KEYS = {
   STUDENTS: 'ips_students_v1',
   PAYMENTS: 'ips_payments_v1',
-  GALLERY: 'ips_gallery_v1',
+  GALLERY: 'ips_gallery_v2',
   CERTIFICATES: 'ips_certificates_v1',
   NOTICES: 'ips_notices_v1',
   INQUIRIES: 'ips_inquiries_v1',
@@ -113,7 +113,19 @@ export function SchoolDataProvider({ children }: { children: React.ReactNode }) 
 
       setStudents(storedStudents ? JSON.parse(storedStudents) : DEFAULT_STUDENTS);
       setPayments(storedPayments ? JSON.parse(storedPayments) : DEFAULT_PAYMENTS);
-      setGallery(storedGallery ? JSON.parse(storedGallery) : DEFAULT_GALLERY);
+      
+      let initialGallery = DEFAULT_GALLERY;
+      if (storedGallery) {
+        try {
+          const parsed = JSON.parse(storedGallery);
+          if (Array.isArray(parsed) && parsed.length >= DEFAULT_GALLERY.length) {
+            initialGallery = parsed;
+          }
+        } catch {
+          initialGallery = DEFAULT_GALLERY;
+        }
+      }
+      setGallery(initialGallery);
       setCertificates(storedCertificates ? JSON.parse(storedCertificates) : DEFAULT_CERTIFICATES);
       setNotices(storedNotices ? JSON.parse(storedNotices) : DEFAULT_NOTICES);
       setInquiries(storedInquiries ? JSON.parse(storedInquiries) : DEFAULT_INQUIRIES);
